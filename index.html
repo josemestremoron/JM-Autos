@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>JM Autos - Compraventa de Vehículos</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -929,27 +932,86 @@
 <div id="modalDetalle" class="modal-detalle"><div class="detalle-contenido"><div id="detalleInfo"></div><button onclick="cerrarDetalle()" style="margin-top:1rem; background:#333; border:none; padding:0.5rem 1rem; border-radius:8px;">Cerrar</button></div></div>
 <div id="lightbox" class="lightbox" onclick="cerrarLightbox()"><img id="lightboxImg" src=""></div>
 
+<!-- Modal de Factura -->
+<div id="modalFactura" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width: 800px; width: 90%; overflow-y: auto; max-height: 90%;">
+        <div id="contenidoFactura"></div>
+        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem;">
+            <button onclick="imprimirFactura()" style="background: #28a745; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">🖨️ Imprimir / Guardar PDF</button>
+            <button onclick="cerrarFactura()" style="background: #333; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">Cerrar</button>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
-    let vehiculos = JSON.parse(localStorage.getItem('vehiculos')) || [
-        { id: 1, titulo: "Mazda 3 Grand Touring", descripcion: "Excelente estado, único dueño. Motor 2.0, Apple CarPlay, sonido Bose.", precio: 79000000, costo: 65000000, año: 2020, kilometros: 66000, imagenPrincipal: "https://i.imgur.com/ZQjXILs.jpg", galeria: ["https://i.imgur.com/ZQjXILs.jpg","https://i.imgur.com/3GW8Eew.jpg","https://i.imgur.com/cVJlc4Q.jpg","https://i.imgur.com/Kpa0rJE.jpg","https://i.imgur.com/sUk2JUO.jpg"], whatsapp: "573167542304", vendido: false, precioVentaReal: null, tipo: "Auto" },
-        { id: 2, titulo: "AKT Bizon 200 R", descripcion: "Cuatrimoto AKT Bizon 200R. Recién repada, batería nueva, luces LED, reversa.", precio: 7500000, costo: 6000000, año: 2008, kilometros: null, imagenPrincipal: "https://i.imgur.com/qrogGTe.jpg", galeria: ["https://i.imgur.com/qrogGTe.jpg","https://i.imgur.com/IlbtDTq.jpg","https://i.imgur.com/u0ekUfY.jpg","https://i.imgur.com/ePzMWXb.jpg","https://i.imgur.com/IOjjMn0.jpg","https://i.imgur.com/obKK2FM.jpg"], whatsapp: "573167542304", vendido: false, precioVentaReal: null, tipo: "Cuatrimoto" },
-        { id: 3, titulo: "Mazda CX30 Grand Touring", descripcion: "Excelente estado. Motor 2.0, Apple CarPlay, Android Auto, 2 llaves originales", precio: 97000000, costo: 82000000, año: 2023, kilometros: 42000, imagenPrincipal: "https://i.imgur.com/MJPe7Vv.jpeg", galeria: ["https://i.imgur.com/MJPe7Vv.jpeg", "https://i.imgur.com/WsPiP8y.jpeg", "https://i.imgur.com/O8DAsH4.jpeg", "https://i.imgur.com/zTljLpT.jpeg", "https://i.imgur.com/omSV22w.jpeg", "https://i.imgur.com/S1n1zqm.jpeg", "https://i.imgur.com/O2ZW7LO.jpeg"], whatsapp: "573167542304", vendido: false, precioVentaReal: null, tipo: "Camioneta" }
-    ];
-    
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBq5DdQEydMyy_5tqETMwIqooQ_xWycfpM",
+        authDomain: "jm-autos.firebaseapp.com",
+        projectId: "jm-autos",
+        storageBucket: "jm-autos.firebasestorage.app",
+        messagingSenderId: "139529793706",
+        appId: "1:139529793706:web:954ef2554544105351e0d3",
+        measurementId: "G-EGYSH3XZYV"
+    };
+
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let vehiculos = [];
     let imagenesTemp = [];
 
-    function guardarVehiculos() {
-        localStorage.setItem('vehiculos', JSON.stringify(vehiculos));
+    // Cargar vehículos desde Firebase
+    async function cargarVehiculos() {
+        try {
+            const snapshot = await db.collection('vehiculos').orderBy('id').get();
+            vehiculos = [];
+            snapshot.forEach(doc => {
+                vehiculos.push(doc.data());
+            });
+            if(vehiculos.length === 0) {
+                await cargarDatosIniciales();
+            }
+            renderizarCatalogo();
+            actualizarTablaAdmin();
+            actualizarEstadisticas();
+        } catch (error) {
+            console.error("Error al cargar:", error);
+        }
     }
 
-    function actualizarId() {
+    // Datos iniciales (solo si la base está vacía)
+    async function cargarDatosIniciales() {
+        const iniciales = [
+            { id: 1, titulo: "Mazda 3 Grand Touring", descripcion: "Excelente estado, único dueño. Motor 2.0, Apple CarPlay, sonido Bose.", precio: 79000000, costo: 65000000, año: 2020, kilometros: 66000, imagenPrincipal: "https://i.imgur.com/ZQjXILs.jpg", galeria: ["https://i.imgur.com/ZQjXILs.jpg","https://i.imgur.com/3GW8Eew.jpg","https://i.imgur.com/cVJlc4Q.jpg","https://i.imgur.com/Kpa0rJE.jpg","https://i.imgur.com/sUk2JUO.jpg"], whatsapp: "573167542304", vendido: false, precioVentaReal: null, tipo: "Auto" },
+            { id: 2, titulo: "AKT Bizon 200 R", descripcion: "Cuatrimoto AKT Bizon 200R. Recién repada, batería nueva, luces LED, reversa.", precio: 7500000, costo: 6000000, año: 2008, kilometros: null, imagenPrincipal: "https://i.imgur.com/qrogGTe.jpg", galeria: ["https://i.imgur.com/qrogGTe.jpg","https://i.imgur.com/IlbtDTq.jpg","https://i.imgur.com/u0ekUfY.jpg","https://i.imgur.com/ePzMWXb.jpg","https://i.imgur.com/IOjjMn0.jpg","https://i.imgur.com/obKK2FM.jpg"], whatsapp: "573167542304", vendido: false, precioVentaReal: null, tipo: "Cuatrimoto" },
+            { id: 3, titulo: "Mazda CX30 Grand Touring", descripcion: "Excelente estado. Motor 2.0, Apple CarPlay, Android Auto.", precio: 97000000, costo: 82000000, año: 2023, kilometros: 42000, imagenPrincipal: "https://i.imgur.com/MJPe7Vv.jpeg", galeria: ["https://i.imgur.com/MJPe7Vv.jpeg", "https://i.imgur.com/WsPiP8y.jpeg", "https://i.imgur.com/O8DAsH4.jpeg"], whatsapp: "573167542304", vendido: false, precioVentaReal: null, tipo: "Camioneta" }
+        ];
+        for(const v of iniciales) {
+            await db.collection('vehiculos').doc(v.id.toString()).set(v);
+        }
+        vehiculos = iniciales;
+    }
+
+    // Guardar vehículo en Firebase
+    async function guardarVehiculoEnFirebase(vehiculo) {
+        await db.collection('vehiculos').doc(vehiculo.id.toString()).set(vehiculo);
+    }
+
+    // Eliminar vehículo de Firebase
+    async function eliminarVehiculoFirebase(id) {
+        await db.collection('vehiculos').doc(id.toString()).delete();
+    }
+
+    async function actualizarId() {
         let maxId = 0;
         vehiculos.forEach(v => { if(v.id > maxId) maxId = v.id; });
         return maxId + 1;
     }
 
-    function agregarVehiculo() {
+    async function agregarVehiculo() {
         let titulo = document.getElementById('newTitulo').value;
         let precio = parseInt(document.getElementById('newPrecio').value);
         let costo = parseInt(document.getElementById('newCosto').value);
@@ -967,8 +1029,9 @@
         let galeriaUrls = [...imagenesTemp];
         let imagenPrincipal = galeriaUrls.length > 0 ? galeriaUrls[0] : "https://i.imgur.com/ZQjXILs.jpg";
 
+        let nuevoId = await actualizarId();
         let nuevoVehiculo = {
-            id: actualizarId(),
+            id: nuevoId,
             titulo: titulo,
             descripcion: descripcion || "Sin descripción",
             precio: precio,
@@ -983,8 +1046,8 @@
             tipo: tipo
         };
 
+        await guardarVehiculoEnFirebase(nuevoVehiculo);
         vehiculos.push(nuevoVehiculo);
-        guardarVehiculos();
         
         document.getElementById('newTitulo').value = '';
         document.getElementById('newPrecio').value = '';
@@ -1002,75 +1065,34 @@
         actualizarEstadisticas();
     }
 
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('fileInput');
-
-    if(dropZone) {
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('drag-over');
-        });
-
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('drag-over');
-        });
-
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('drag-over');
-            const files = Array.from(e.dataTransfer.files);
-            procesarImagenes(files);
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            const files = Array.from(e.target.files);
-            procesarImagenes(files);
-        });
-    }
-
-    function procesarImagenes(files) {
-        files.forEach(file => {
-            if(file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    imagenesTemp.push(event.target.result);
-                    mostrarPreview();
-                };
-                reader.readAsDataURL(file);
+    async function toggleVendido(id) {
+        const v = vehiculos.find(v => v.id === id);
+        if(v) {
+            v.vendido = !v.vendido;
+            if(v.vendido) {
+                const precioVenta = prompt("💵 ¿Cuál fue el precio REAL de venta? (Ej: 75000000)");
+                if(!precioVenta || isNaN(precioVenta)) {
+                    v.vendido = false;
+                    return;
+                }
+                const nombreCliente = prompt("👤 Nombre del comprador:", "Cliente Particular");
+                const ccCliente = prompt("🆔 CC/NIT del comprador:", "CC: 12.345.678");
+                v.precioVentaReal = parseInt(precioVenta);
+                await guardarVehiculoEnFirebase(v);
+                generarFactura(v, parseInt(precioVenta), nombreCliente, ccCliente);
+            } else {
+                v.precioVentaReal = null;
+                await guardarVehiculoEnFirebase(v);
             }
-        });
-    }
-
-    function mostrarPreview() {
-        const preview = document.getElementById('imagePreview');
-        if(preview) {
-            preview.innerHTML = '';
-            imagenesTemp.forEach((img, index) => {
-                const div = document.createElement('div');
-                div.style.position = 'relative';
-                div.innerHTML = `
-                    <img src="${img}" class="preview-img">
-                    <button onclick="eliminarImagenTemp(${index})" style="position:absolute; top:-8px; right:-8px; background:red; color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer;">×</button>
-                `;
-                preview.appendChild(div);
-            });
+            await cargarVehiculos();
         }
     }
 
-    function eliminarImagenTemp(index) {
-        imagenesTemp.splice(index, 1);
-        mostrarPreview();
-    }
-
-    function toggleMenu() {
-        document.getElementById('sideMenu').classList.toggle('open');
-        document.getElementById('overlay').classList.toggle('active');
-    }
-
-    function cambiarSeccion(seccion) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.getElementById(seccion).classList.add('active');
-        if(seccion === 'catalogo') renderizarCatalogo();
+    async function eliminarVehiculo(id) {
+        if(confirm('¿Eliminar este vehículo permanentemente?')) {
+            await eliminarVehiculoFirebase(id);
+            await cargarVehiculos();
+        }
     }
 
     function renderizarCatalogo() {
@@ -1100,9 +1122,11 @@
         if(!v) return;
         
         let galeriaHtml = '';
-        v.galeria.forEach((img, i) => {
-            galeriaHtml += `<img src="${img}" onclick="abrirLightbox('${img}')">`;
-        });
+        if(v.galeria) {
+            v.galeria.forEach((img, i) => {
+                galeriaHtml += `<img src="${img}" onclick="abrirLightbox('${img}')">`;
+            });
+        }
         
         document.getElementById('detalleInfo').innerHTML = `
             <h2>${v.titulo}</h2>
@@ -1113,73 +1137,11 @@
             <p><strong>Kilómetros:</strong> ${v.kilometros ? v.kilometros.toLocaleString() + ' km' : 'No especificado'}</p>
             <p><strong>Precio:</strong> $${v.precio.toLocaleString()}</p>
             <p><strong>Tipo:</strong> ${v.tipo}</p>
+            ${!v.vendido ? `<button class="btn-editar" onclick="toggleVendido(${v.id})" style="background:#28a745; color:white; padding:0.5rem 1rem;">✅ Marcar como Vendido</button>` : '<span style="color:#ff4444">🚗 VEHÍCULO VENDIDO</span>'}
+            <br><br>
             <a href="https://wa.me/${v.whatsapp}?text=Hola%20JM%20Autos,%20estoy%20interesado%20en%20${encodeURIComponent(v.titulo)}" class="whatsapp-btn" target="_blank"><i class="fab fa-whatsapp"></i> Consultar por WhatsApp</a>
         `;
         document.getElementById('modalDetalle').style.display = 'block';
-    }
-
-    function cerrarDetalle() {
-        document.getElementById('modalDetalle').style.display = 'none';
-    }
-
-    function abrirLightbox(imgSrc) {
-        document.getElementById('lightboxImg').src = imgSrc;
-        document.getElementById('lightbox').style.display = 'flex';
-    }
-
-    function cerrarLightbox() {
-        document.getElementById('lightbox').style.display = 'none';
-    }
-
-    function toggleChat() {
-        const modal = document.getElementById('chatModal');
-        modal.style.display = modal.style.display === 'none' ? 'block' : 'none';
-    }
-
-    function enviarMensaje() {
-        const input = document.getElementById('chatInput');
-        const mensaje = input.value.trim();
-        if(!mensaje) return;
-        
-        const chatBody = document.getElementById('chatBody');
-        const userMsg = document.createElement('p');
-        userMsg.innerHTML = `<strong>Tú:</strong> ${mensaje}`;
-        chatBody.appendChild(userMsg);
-        
-        setTimeout(() => {
-            const autoMsg = document.createElement('p');
-            autoMsg.innerHTML = `<strong>JM Autos:</strong> Gracias por tu mensaje. Un asesor te contactará pronto. ¿Necesitas algo más?`;
-            chatBody.appendChild(autoMsg);
-            chatBody.scrollTop = chatBody.scrollHeight;
-        }, 500);
-        
-        input.value = '';
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }
-
-    function mostrarLogin() {
-        document.getElementById('modalLogin').style.display = 'flex';
-    }
-
-    function cerrarModalLogin() {
-        document.getElementById('modalLogin').style.display = 'none';
-    }
-
-    function login() {
-        const user = document.getElementById('loginUser').value;
-        const pass = document.getElementById('loginPass').value;
-        if(user === 'admin' && pass === 'admin123') {
-            document.getElementById('panelFinanzas').style.display = 'block';
-            cerrarModalLogin();
-            actualizarTablaAdmin();
-            actualizarEstadisticas();
-        } else {
-            alert('Usuario o contraseña incorrectos');
-        }
-    }
-
-    function cerrarSesion() {
-        document.getElementById('panelFinanzas').style.display = 'none';
     }
 
     function actualizarTablaAdmin() {
@@ -1194,36 +1156,10 @@
             row.insertCell(3).innerHTML = '$' + v.costo.toLocaleString();
             row.insertCell(4).innerHTML = v.vendido ? '<span style="color:#ff4444">Vendido</span>' : '<span style="color:#44ff44">Disponible</span>';
             row.insertCell(5).innerHTML = `
-                <button class="btn-editar" onclick="toggleVendido(${v.id})">${v.vendido ? 'Marcar Disponible' : 'Marcar Vendido'}</button>
+                <button class="btn-editar" onclick="toggleVendido(${v.id})">${v.vendido ? 'Disponible' : 'Vendido'}</button>
                 <button class="btn-eliminar" onclick="eliminarVehiculo(${v.id})">Eliminar</button>
             `;
         });
-    }
-
-    function toggleVendido(id) {
-        const v = vehiculos.find(v => v.id === id);
-        if(v) {
-            v.vendido = !v.vendido;
-            if(v.vendido) {
-                v.precioVentaReal = v.precio;
-            } else {
-                v.precioVentaReal = null;
-            }
-            guardarVehiculos();
-            actualizarTablaAdmin();
-            actualizarEstadisticas();
-            renderizarCatalogo();
-        }
-    }
-
-    function eliminarVehiculo(id) {
-        if(confirm('¿Eliminar este vehículo permanentemente?')) {
-            vehiculos = vehiculos.filter(v => v.id !== id);
-            guardarVehiculos();
-            actualizarTablaAdmin();
-            actualizarEstadisticas();
-            renderizarCatalogo();
-        }
     }
 
     function actualizarEstadisticas() {
@@ -1249,32 +1185,135 @@
         if(elGananciaNeta) elGananciaNeta.innerHTML = '$' + gananciaNeta.toLocaleString();
     }
 
+    function generarFactura(vehiculo, precioVenta, nombreCliente, ccCliente) {
+        const fecha = new Date();
+        const fechaFormateada = fecha.toLocaleDateString('es-CO');
+        const facturaHTML = `
+            <div style="font-family: Arial, sans-serif; padding: 20px; background: white; color: black;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px;">
+                    <div><img src="https://i.imgur.com/uzhDkFl.jpeg" alt="Logo JM Autos" style="height: 80px;"></div>
+                    <div style="text-align: right; font-size: 12px;">
+                        <strong>JM Autos S.A.S</strong><br>NIT: 901.567.234-1<br>Cra 9 # 15-32, Valledupar<br>Tel: 605 589 1234
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 20px 0;">
+                    <h1>FACTURA DE VENTA</h1>
+                    <p><strong>No:</strong> JM-${fecha.getFullYear()}${fecha.getMonth()+1}${fecha.getDate()}-${vehiculo.id}</p>
+                    <p><strong>Fecha:</strong> ${fechaFormateada}</p>
+                    <p><strong>Ciudad:</strong> Valledupar</p>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <div><h3>Cliente</h3>${nombreCliente || 'Cliente Particular'}<br>${ccCliente || 'CC: 12.345.678'}</div>
+                    <div><h3>Vehículo</h3>${vehiculo.titulo}<br>Modelo: ${vehiculo.año}<br>Precio: $${vehiculo.precio.toLocaleString()}</div>
+                </div>
+                <table style="width:100%; border-collapse: collapse; margin-top: 20px;">
+                    <tr style="background:#eee;"><th style="border:1px solid #000;">Descripción</th><th style="border:1px solid #000;">Valor</th></tr>
+                    <tr><td style="border:1px solid #000;">Vehículo ${vehiculo.titulo}</td><td style="border:1px solid #000;">$${vehiculo.precio.toLocaleString()}</td></tr>
+                    <tr><td style="border:1px solid #000;">Descuento</td><td style="border:1px solid #000;">$${(vehiculo.precio - precioVenta).toLocaleString()}</td></tr>
+                    <tr><td style="border:1px solid #000;"><strong>Total</strong></td><td style="border:1px solid #000;"><strong>$${precioVenta.toLocaleString()}</strong></td></tr>
+                </table>
+                <div style="margin-top: 20px;"><strong>Forma de Pago:</strong> Transferencia Bancaria - Bancolombia</div>
+                <div style="margin-top: 60px; display: flex; justify-content: space-between;">
+                    <div style="text-align: center;"><div style="border-top:1px solid #000; width:200px;"></div>Vendedor<br>JM Autos</div>
+                    <div style="text-align: center;"><div style="border-top:1px solid #000; width:200px;"></div>Comprador<br>${nombreCliente || 'Cliente'}</div>
+                </div>
+            </div>
+        `;
+        document.getElementById('contenidoFactura').innerHTML = facturaHTML;
+        document.getElementById('modalFactura').style.display = 'flex';
+    }
+
+    function cerrarFactura() { document.getElementById('modalFactura').style.display = 'none'; }
+    function imprimirFactura() {
+        const contenido = document.getElementById('contenidoFactura').innerHTML;
+        const ventana = window.open('', '_blank');
+        ventana.document.write(`<html><head><title>Factura JM Autos</title><style>body{font-family:Arial;padding:20px;} @media print{button{display:none;}}</style></head><body>${contenido}</body></html>`);
+        ventana.document.close();
+        ventana.print();
+    }
+
+    // Funciones UI
+    function toggleMenu() { document.getElementById('sideMenu').classList.toggle('open'); document.getElementById('overlay').classList.toggle('active'); }
+    function cambiarSeccion(seccion) { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.getElementById(seccion).classList.add('active'); }
+    function cerrarDetalle() { document.getElementById('modalDetalle').style.display = 'none'; }
+    function abrirLightbox(imgSrc) { document.getElementById('lightboxImg').src = imgSrc; document.getElementById('lightbox').style.display = 'flex'; }
+    function cerrarLightbox() { document.getElementById('lightbox').style.display = 'none'; }
+    function toggleChat() { const modal = document.getElementById('chatModal'); modal.style.display = modal.style.display === 'none' ? 'block' : 'none'; }
+    function enviarMensaje() {
+        const input = document.getElementById('chatInput');
+        const mensaje = input.value.trim();
+        if(!mensaje) return;
+        const chatBody = document.getElementById('chatBody');
+        chatBody.innerHTML += `<p><strong>Tú:</strong> ${mensaje}</p>`;
+        input.value = '';
+        setTimeout(() => { chatBody.innerHTML += `<p style="color:#ffd700;"><strong>JM Autos:</strong> Gracias, un asesor te contactará pronto.</p>`; chatBody.scrollTop = chatBody.scrollHeight; }, 500);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+    function mostrarLogin() { document.getElementById('modalLogin').style.display = 'flex'; }
+    function cerrarModalLogin() { document.getElementById('modalLogin').style.display = 'none'; }
+    function login() {
+        const user = document.getElementById('loginUser').value;
+        const pass = document.getElementById('loginPass').value;
+        if(user === 'admin' && pass === 'admin123') {
+            document.getElementById('panelFinanzas').style.display = 'block';
+            cerrarModalLogin();
+        } else alert('Usuario o contraseña incorrectos');
+    }
+    function cerrarSesion() { document.getElementById('panelFinanzas').style.display = 'none'; }
     function cambiarTab(tab, event) {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         if(event && event.target) event.target.classList.add('active');
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
         document.getElementById(`tab-${tab}`).classList.add('active');
     }
-
     function descargarExcel() {
-        const datos = vehiculos.map(v => ({
-            ID: v.id,
-            Vehículo: v.titulo,
-            Precio: v.precio,
-            Costo: v.costo,
-            Ganancia: v.precio - v.costo,
-            Estado: v.vendido ? 'Vendido' : 'Disponible',
-            Año: v.año,
-            Tipo: v.tipo
-        }));
+        const datos = vehiculos.map(v => ({ ID: v.id, Vehículo: v.titulo, Precio: v.precio, Costo: v.costo, Ganancia: v.precio - v.costo, Estado: v.vendido ? 'Vendido' : 'Disponible', Año: v.año }));
         const ws = XLSX.utils.json_to_sheet(datos);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Vehículos');
         XLSX.writeFile(wb, `vehiculos_jmautos_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 
-    renderizarCatalogo();
-    actualizarEstadisticas();
+    // Subir imágenes
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    if(dropZone) {
+        dropZone.addEventListener('dragover', (e) => e.preventDefault());
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const files = Array.from(e.dataTransfer.files);
+            procesarImagenes(files);
+        });
+        fileInput.addEventListener('change', (e) => procesarImagenes(Array.from(e.target.files)));
+    }
+    function procesarImagenes(files) {
+        files.forEach(file => {
+            if(file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imagenesTemp.push(event.target.result);
+                    mostrarPreview();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    function mostrarPreview() {
+        const preview = document.getElementById('imagePreview');
+        if(preview) {
+            preview.innerHTML = '';
+            imagenesTemp.forEach((img, index) => {
+                const div = document.createElement('div');
+                div.style.position = 'relative';
+                div.innerHTML = `<img src="${img}" class="preview-img"><button onclick="eliminarImagenTemp(${index})" style="position:absolute; top:-8px; right:-8px; background:red; color:white; border:none; border-radius:50%; width:20px; height:20px;">×</button>`;
+                preview.appendChild(div);
+            });
+        }
+    }
+    function eliminarImagenTemp(index) { imagenesTemp.splice(index, 1); mostrarPreview(); }
+
+    // Iniciar
+    cargarVehiculos();
 </script>
 </body>
 </html>
