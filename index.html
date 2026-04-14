@@ -312,6 +312,7 @@
             font-size: 0.8rem;
         }
 
+        /* Panel Admin GRANDE - ocupa toda la pantalla */
         .panel-finanzas {
             background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
             margin: 2rem 0;
@@ -319,24 +320,36 @@
             border-radius: 20px;
             border: 2px solid #ffd700;
             display: none;
+            width: 100%;
         }
 
         .admin-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             flex-wrap: wrap;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ffd700;
+        }
+
+        .admin-header h2 {
+            font-size: 1.8rem;
+            color: #ffd700;
         }
 
         .btn-logout {
             background: #8b0000;
             color: white;
-            padding: 0.5rem 1rem;
+            padding: 0.6rem 1.2rem;
             border-radius: 8px;
             cursor: pointer;
             border: none;
-            font-size: 0.9rem;
+            font-size: 1rem;
+        }
+
+        .btn-logout:hover {
+            background: #cc0000;
         }
 
         .tabs {
@@ -355,6 +368,12 @@
             cursor: pointer;
             padding: 0.5rem 1rem;
             color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255,215,0,0.1);
+            border-radius: 8px;
         }
 
         .tab-btn.active {
@@ -485,6 +504,19 @@
             cursor: pointer;
             font-weight: bold;
             margin-top: 1rem;
+        }
+
+        /* Tabla de facturas */
+        .facturas-grid {
+            overflow-x: auto;
+        }
+        .btn-ver-factura {
+            background: #17a2b8;
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
         }
 
         .modal-detalle {
@@ -674,6 +706,7 @@
             color: #666;
         }
 
+        /* Modal Login - sin mostrar credenciales */
         .modal {
             display: none;
             position: fixed;
@@ -812,6 +845,7 @@
             </div>
         </div>
 
+        <!-- Panel Admin GRANDE -->
         <div id="panelFinanzas" class="panel-finanzas">
             <div class="admin-header">
                 <h2><i class="fas fa-chart-line"></i> Panel de Administración</h2>
@@ -820,7 +854,8 @@
             <div class="tabs">
                 <button class="tab-btn active" onclick="cambiarTab('resumen', event)">📊 Resumen</button>
                 <button class="tab-btn" onclick="cambiarTab('vehiculos', event)">🚗 Gestionar</button>
-                <button class="tab-btn" onclick="cambiarTab('agregar', event)">➕ Agregar Vehículo</button>
+                <button class="tab-btn" onclick="cambiarTab('agregar', event)">➕ Agregar</button>
+                <button class="tab-btn" onclick="cambiarTab('facturas', event)">📄 Facturas</button>
                 <button class="tab-btn" onclick="cambiarTab('finanzas', event)">💰 Finanzas</button>
                 <button class="tab-btn" onclick="cambiarTab('reportes', event)">📥 Reportes</button>
             </div>
@@ -884,15 +919,32 @@
                             <input type="text" id="newWhatsapp" placeholder="Ej: 573167542304">
                         </div>
                         <div class="form-group">
-                            <label>Imágenes (puedes arrastrar o seleccionar varias)</label>
+                            <label>Imágenes</label>
                             <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-                                <i class="fas fa-cloud-upload-alt"></i> Arrastra imágenes aquí o haz clic
+                                <i class="fas fa-cloud-upload-alt"></i> Arrastra imágenes o haz clic
                                 <input type="file" id="fileInput" multiple accept="image/*" style="display:none">
                             </div>
                             <div id="imagePreview" class="preview-gallery"></div>
                         </div>
                     </div>
                     <button class="btn-subir" onclick="agregarVehiculo()"><i class="fas fa-save"></i> Guardar Vehículo</button>
+                </div>
+            </div>
+            <div id="tab-facturas" class="tab-content">
+                <div class="facturas-grid">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>N° Factura</th>
+                                <th>Fecha</th>
+                                <th>Vehículo</th>
+                                <th>Comprador</th>
+                                <th>Valor</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaFacturas"></tbody>
+                    </table>
                 </div>
             </div>
             <div id="tab-finanzas" class="tab-content"><div id="listaEditarInversiones"></div></div>
@@ -920,7 +972,6 @@
     <div class="chat-body" id="chatBody">
         <p style="color:#ffd700;">👋 ¡Hola! ¿En qué podemos ayudarte?</p>
         <p>Pregúntanos sobre precios, financiación o disponibilidad de vehículos.</p>
-        <p>Estamos aquí para ti de lunes a sábado.</p>
     </div>
     <div class="chat-input">
         <input type="text" id="chatInput" placeholder="Escribe tu mensaje...">
@@ -928,7 +979,16 @@
     </div>
 </div>
 
-<div id="modalLogin" class="modal"><div class="modal-content"><h2>Acceso Admin</h2><input type="text" id="loginUser" placeholder="Usuario"><input type="password" id="loginPass" placeholder="Contraseña"><button onclick="login()" style="background:#007acc; border:none; padding:0.6rem 1.2rem; border-radius:8px;">Ingresar</button><button onclick="cerrarModalLogin()" style="margin-left:1rem;">Cancelar</button><p style="margin-top:1rem;">admin / admin123</p></div></div>
+<div id="modalLogin" class="modal">
+    <div class="modal-content">
+        <h2><i class="fas fa-lock"></i> Acceso Administrador</h2>
+        <input type="text" id="loginUser" placeholder="Usuario">
+        <input type="password" id="loginPass" placeholder="Contraseña">
+        <button onclick="login()" style="background:#007acc; border:none; padding:0.6rem 1.2rem; border-radius:8px; width:100%; cursor:pointer;">Ingresar</button>
+        <button onclick="cerrarModalLogin()" style="margin-top:0.5rem; background:#333; border:none; padding:0.5rem; border-radius:8px; width:100%; cursor:pointer;">Cancelar</button>
+    </div>
+</div>
+
 <div id="modalDetalle" class="modal-detalle"><div class="detalle-contenido"><div id="detalleInfo"></div><button onclick="cerrarDetalle()" style="margin-top:1rem; background:#333; border:none; padding:0.5rem 1rem; border-radius:8px;">Cerrar</button></div></div>
 <div id="lightbox" class="lightbox" onclick="cerrarLightbox()"><img id="lightboxImg" src=""></div>
 
@@ -937,7 +997,7 @@
     <div class="modal-content" style="max-width: 800px; width: 90%; overflow-y: auto; max-height: 90%;">
         <div id="contenidoFactura"></div>
         <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem;">
-            <button onclick="imprimirFactura()" style="background: #28a745; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">🖨️ Imprimir / Guardar PDF</button>
+            <button onclick="imprimirFactura()" style="background: #28a745; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">🖨️ Imprimir / PDF</button>
             <button onclick="cerrarFactura()" style="background: #333; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">Cerrar</button>
         </div>
     </div>
@@ -952,42 +1012,44 @@
         projectId: "jm-autos",
         storageBucket: "jm-autos.firebasestorage.app",
         messagingSenderId: "139529793706",
-        appId: "1:139529793706:web:954ef2554544105351e0d3",
-        measurementId: "G-EGYSH3XZYV"
+        appId: "1:139529793706:web:954ef2554544105351e0d3"
     };
 
-    // Inicializar Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
     let vehiculos = [];
+    let facturas = [];
     let imagenesTemp = [];
 
-    // Cargar vehículos desde Firebase
     async function cargarVehiculos() {
-        try {
-            const snapshot = await db.collection('vehiculos').orderBy('id').get();
-            vehiculos = [];
-            snapshot.forEach(doc => {
-                vehiculos.push(doc.data());
-            });
-            if(vehiculos.length === 0) {
-                await cargarDatosIniciales();
-            }
-            renderizarCatalogo();
-            actualizarTablaAdmin();
-            actualizarEstadisticas();
-        } catch (error) {
-            console.error("Error al cargar:", error);
-        }
+        const snapshot = await db.collection('vehiculos').orderBy('id').get();
+        vehiculos = [];
+        snapshot.forEach(doc => vehiculos.push(doc.data()));
+        if(vehiculos.length === 0) await cargarDatosIniciales();
+        renderizarCatalogo();
+        actualizarTablaAdmin();
+        actualizarEstadisticas();
     }
 
-    // Datos iniciales (solo si la base está vacía)
+    async function cargarFacturas() {
+        const snapshot = await db.collection('facturas').orderBy('fecha', 'desc').get();
+        facturas = [];
+        snapshot.forEach(doc => facturas.push({ id: doc.id, ...doc.data() }));
+        actualizarTablaFacturas();
+    }
+
+    async function guardarFactura(factura) {
+        const id = Date.now().toString();
+        await db.collection('facturas').doc(id).set(factura);
+        await cargarFacturas();
+    }
+
     async function cargarDatosIniciales() {
         const iniciales = [
-            { id: 1, titulo: "Mazda 3 Grand Touring", descripcion: "Excelente estado, único dueño. Motor 2.0, Apple CarPlay, sonido Bose.", precio: 79000000, costo: 65000000, año: 2020, kilometros: 66000, imagenPrincipal: "https://i.imgur.com/ZQjXILs.jpg", galeria: ["https://i.imgur.com/ZQjXILs.jpg","https://i.imgur.com/3GW8Eew.jpg","https://i.imgur.com/cVJlc4Q.jpg","https://i.imgur.com/Kpa0rJE.jpg","https://i.imgur.com/sUk2JUO.jpg"], whatsapp: "573167542304", vendido: false, precioVentaReal: null, tipo: "Auto" },
-            { id: 2, titulo: "AKT Bizon 200 R", descripcion: "Cuatrimoto AKT Bizon 200R. Recién repada, batería nueva, luces LED, reversa.", precio: 7500000, costo: 6000000, año: 2008, kilometros: null, imagenPrincipal: "https://i.imgur.com/qrogGTe.jpg", galeria: ["https://i.imgur.com/qrogGTe.jpg","https://i.imgur.com/IlbtDTq.jpg","https://i.imgur.com/u0ekUfY.jpg","https://i.imgur.com/ePzMWXb.jpg","https://i.imgur.com/IOjjMn0.jpg","https://i.imgur.com/obKK2FM.jpg"], whatsapp: "573167542304", vendido: false, precioVentaReal: null, tipo: "Cuatrimoto" },
-            { id: 3, titulo: "Mazda CX30 Grand Touring", descripcion: "Excelente estado. Motor 2.0, Apple CarPlay, Android Auto.", precio: 97000000, costo: 82000000, año: 2023, kilometros: 42000, imagenPrincipal: "https://i.imgur.com/MJPe7Vv.jpeg", galeria: ["https://i.imgur.com/MJPe7Vv.jpeg", "https://i.imgur.com/WsPiP8y.jpeg", "https://i.imgur.com/O8DAsH4.jpeg"], whatsapp: "573167542304", vendido: false, precioVentaReal: null, tipo: "Camioneta" }
+            { id: 1, titulo: "Mazda 3 Grand Touring", descripcion: "Excelente estado, único dueño.", precio: 79000000, costo: 65000000, año: 2020, kilometros: 66000, imagenPrincipal: "https://i.imgur.com/ZQjXILs.jpg", galeria: ["https://i.imgur.com/ZQjXILs.jpg","https://i.imgur.com/3GW8Eew.jpg","https://i.imgur.com/cVJlc4Q.jpg"], whatsapp: "573167542304", vendido: false, precioVentaReal: null, tipo: "Auto" },
+            { id: 2, titulo: "AKT Bizon 200 R", descripcion: "Cuatrimoto AKT Bizon 200R. Recién repada.", precio: 7500000, costo: 6000000, año: 2008, kilometros: null, imagenPrincipal: "https://i.imgur.com/qrogGTe.jpg", galeria: ["https://i.imgur.com/qrogGTe.jpg","https://i.imgur.com/IlbtDTq.jpg","https://i.imgur.com/u0ekUfY.jpg"], whatsapp: "573167542304", vendido: false, precioVentaReal: null, tipo: "Cuatrimoto" },
+            { id: 3, titulo: "Mazda CX30 Grand Touring", descripcion: "Excelente estado. Motor 2.0.", precio: 97000000, costo: 82000000, año: 2023, kilometros: 42000, imagenPrincipal: "https://i.imgur.com/MJPe7Vv.jpeg", galeria: ["https://i.imgur.com/MJPe7Vv.jpeg"], whatsapp: "573167542304", vendido: false, precioVentaReal: null, tipo: "Camioneta" }
         ];
         for(const v of iniciales) {
             await db.collection('vehiculos').doc(v.id.toString()).set(v);
@@ -995,12 +1057,10 @@
         vehiculos = iniciales;
     }
 
-    // Guardar vehículo en Firebase
     async function guardarVehiculoEnFirebase(vehiculo) {
         await db.collection('vehiculos').doc(vehiculo.id.toString()).set(vehiculo);
     }
 
-    // Eliminar vehículo de Firebase
     async function eliminarVehiculoFirebase(id) {
         await db.collection('vehiculos').doc(id.toString()).delete();
     }
@@ -1022,7 +1082,7 @@
         let whatsapp = document.getElementById('newWhatsapp').value;
 
         if(!titulo || !precio || !costo) {
-            alert("Por favor completa título, precio y costo");
+            alert("Completa título, precio y costo");
             return;
         }
 
@@ -1059,7 +1119,7 @@
         imagenesTemp = [];
         document.getElementById('imagePreview').innerHTML = '';
         
-        alert("✅ Vehículo agregado correctamente");
+        alert("✅ Vehículo agregado");
         renderizarCatalogo();
         actualizarTablaAdmin();
         actualizarEstadisticas();
@@ -1067,29 +1127,35 @@
 
     async function toggleVendido(id) {
         const v = vehiculos.find(v => v.id === id);
-        if(v) {
-            v.vendido = !v.vendido;
-            if(v.vendido) {
-                const precioVenta = prompt("💵 ¿Cuál fue el precio REAL de venta? (Ej: 75000000)");
-                if(!precioVenta || isNaN(precioVenta)) {
-                    v.vendido = false;
-                    return;
-                }
-                const nombreCliente = prompt("👤 Nombre del comprador:", "Cliente Particular");
-                const ccCliente = prompt("🆔 CC/NIT del comprador:", "CC: 12.345.678");
-                v.precioVentaReal = parseInt(precioVenta);
-                await guardarVehiculoEnFirebase(v);
-                generarFactura(v, parseInt(precioVenta), nombreCliente, ccCliente);
-            } else {
-                v.precioVentaReal = null;
-                await guardarVehiculoEnFirebase(v);
-            }
+        if(v && !v.vendido) {
+            const precioVenta = prompt("💵 Precio REAL de venta:");
+            if(!precioVenta || isNaN(precioVenta)) return;
+            const nombreCliente = prompt("👤 Nombre del comprador:", "Cliente Particular");
+            const ccCliente = prompt("🆔 CC/NIT del comprador:", "CC: 12.345.678");
+            
+            v.vendido = true;
+            v.precioVentaReal = parseInt(precioVenta);
+            await guardarVehiculoEnFirebase(v);
+            
+            const factura = {
+                numero: `JM-${Date.now()}`,
+                fecha: new Date().toLocaleDateString('es-CO'),
+                vehiculo: v.titulo,
+                comprador: nombreCliente || "Cliente Particular",
+                cc: ccCliente || "CC: 12.345.678",
+                valor: parseInt(precioVenta),
+                valorOriginal: v.precio,
+                vehiculoId: v.id
+            };
+            await guardarFactura(factura);
+            
             await cargarVehiculos();
+            generarFactura(v, parseInt(precioVenta), nombreCliente, ccCliente);
         }
     }
 
     async function eliminarVehiculo(id) {
-        if(confirm('¿Eliminar este vehículo permanentemente?')) {
+        if(confirm('¿Eliminar este vehículo?')) {
             await eliminarVehiculoFirebase(id);
             await cargarVehiculos();
         }
@@ -1105,7 +1171,7 @@
                 tarjeta.className = 'tarjeta';
                 tarjeta.onclick = () => verDetalle(v.id);
                 tarjeta.innerHTML = `
-                    <img src="${v.imagenPrincipal}" class="tarjeta-imagen" onerror="this.src='https://via.placeholder.com/400x300?text=Sin+Imagen'">
+                    <img src="${v.imagenPrincipal}" class="tarjeta-imagen" onerror="this.src='https://via.placeholder.com/400x300'">
                     <div class="tarjeta-contenido">
                         <div class="tarjeta-titulo">${v.titulo}</div>
                         <div class="tarjeta-precio">$${v.precio.toLocaleString()}</div>
@@ -1120,26 +1186,16 @@
     function verDetalle(id) {
         const v = vehiculos.find(v => v.id === id);
         if(!v) return;
-        
         let galeriaHtml = '';
-        if(v.galeria) {
-            v.galeria.forEach((img, i) => {
-                galeriaHtml += `<img src="${img}" onclick="abrirLightbox('${img}')">`;
-            });
-        }
-        
+        if(v.galeria) v.galeria.forEach(img => galeriaHtml += `<img src="${img}" onclick="abrirLightbox('${img}')">`);
         document.getElementById('detalleInfo').innerHTML = `
             <h2>${v.titulo}</h2>
             <div class="galeria-principal"><img src="${v.imagenPrincipal}" onclick="abrirLightbox('${v.imagenPrincipal}')"></div>
             <div class="galeria-miniaturas">${galeriaHtml}</div>
             <p><strong>Descripción:</strong> ${v.descripcion}</p>
-            <p><strong>Año:</strong> ${v.año}</p>
-            <p><strong>Kilómetros:</strong> ${v.kilometros ? v.kilometros.toLocaleString() + ' km' : 'No especificado'}</p>
+            <p><strong>Año:</strong> ${v.año} | <strong>KM:</strong> ${v.kilometros ? v.kilometros.toLocaleString() + ' km' : 'No especificado'}</p>
             <p><strong>Precio:</strong> $${v.precio.toLocaleString()}</p>
-            <p><strong>Tipo:</strong> ${v.tipo}</p>
-            ${!v.vendido ? `<button class="btn-editar" onclick="toggleVendido(${v.id})" style="background:#28a745; color:white; padding:0.5rem 1rem;">✅ Marcar como Vendido</button>` : '<span style="color:#ff4444">🚗 VEHÍCULO VENDIDO</span>'}
-            <br><br>
-            <a href="https://wa.me/${v.whatsapp}?text=Hola%20JM%20Autos,%20estoy%20interesado%20en%20${encodeURIComponent(v.titulo)}" class="whatsapp-btn" target="_blank"><i class="fab fa-whatsapp"></i> Consultar por WhatsApp</a>
+            <a href="https://wa.me/${v.whatsapp}?text=Hola%20JM%20Autos,%20estoy%20interesado%20en%20${encodeURIComponent(v.titulo)}" class="whatsapp-btn" target="_blank"><i class="fab fa-whatsapp"></i> Consultar</a>
         `;
         document.getElementById('modalDetalle').style.display = 'block';
     }
@@ -1156,10 +1212,63 @@
             row.insertCell(3).innerHTML = '$' + v.costo.toLocaleString();
             row.insertCell(4).innerHTML = v.vendido ? '<span style="color:#ff4444">Vendido</span>' : '<span style="color:#44ff44">Disponible</span>';
             row.insertCell(5).innerHTML = `
-                <button class="btn-editar" onclick="toggleVendido(${v.id})">${v.vendido ? 'Disponible' : 'Vendido'}</button>
+                ${!v.vendido ? `<button class="btn-editar" onclick="toggleVendido(${v.id})">Vender</button>` : ''}
                 <button class="btn-eliminar" onclick="eliminarVehiculo(${v.id})">Eliminar</button>
             `;
         });
+    }
+
+    function actualizarTablaFacturas() {
+        const tbody = document.getElementById('tablaFacturas');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+        facturas.forEach(f => {
+            const row = tbody.insertRow();
+            row.insertCell(0).innerHTML = f.numero;
+            row.insertCell(1).innerHTML = f.fecha;
+            row.insertCell(2).innerHTML = f.vehiculo;
+            row.insertCell(3).innerHTML = f.comprador;
+            row.insertCell(4).innerHTML = '$' + f.valor.toLocaleString();
+            row.insertCell(5).innerHTML = `<button class="btn-ver-factura" onclick="verFactura('${f.id}')">Ver</button>`;
+        });
+    }
+
+    function verFactura(id) {
+        const factura = facturas.find(f => f.id === id);
+        if(factura) {
+            generarFacturaDesdeHistorial(factura);
+        }
+    }
+
+    function generarFacturaDesdeHistorial(factura) {
+        const facturaHTML = `
+            <div style="font-family: Arial; padding: 20px; background: white; color: black;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px;">
+                    <div><img src="https://i.imgur.com/uzhDkFl.jpeg" style="height: 80px;"></div>
+                    <div style="text-align: right;">
+                        <strong>JM Autos S.A.S</strong><br>NIT: 901.567.234-1<br>Valledupar<br>Tel: 605 589 1234
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 20px 0;">
+                    <h1>FACTURA DE VENTA</h1>
+                    <p><strong>N°:</strong> ${factura.numero}</p>
+                    <p><strong>Fecha:</strong> ${factura.fecha}</p>
+                </div>
+                <div><h3>Cliente:</h3> ${factura.comprador}<br>${factura.cc}</div>
+                <div style="margin-top: 20px;"><h3>Vehículo:</h3> ${factura.vehiculo}</div>
+                <table style="width:100%; border-collapse: collapse; margin-top: 20px;">
+                    <tr style="background:#eee;"><th style="border:1px solid #000;">Descripción</th><th style="border:1px solid #000;">Valor</th></tr>
+                    <tr><td style="border:1px solid #000;">Vehículo</td><td style="border:1px solid #000;">$${factura.valorOriginal?.toLocaleString() || factura.valor.toLocaleString()}</td></tr>
+                    <tr><td style="border:1px solid #000;"><strong>Total</strong></td><td style="border:1px solid #000;"><strong>$${factura.valor.toLocaleString()}</strong></td></tr>
+                </table>
+                <div style="margin-top: 60px; display: flex; justify-content: space-between;">
+                    <div style="text-align: center;"><div style="border-top:1px solid #000; width:200px;"></div>Vendedor<br>JM Autos</div>
+                    <div style="text-align: center;"><div style="border-top:1px solid #000; width:200px;"></div>Comprador<br>${factura.comprador}</div>
+                </div>
+            </div>
+        `;
+        document.getElementById('contenidoFactura').innerHTML = facturaHTML;
+        document.getElementById('modalFactura').style.display = 'flex';
     }
 
     function actualizarEstadisticas() {
@@ -1170,49 +1279,35 @@
         const inversion = vehiculos.reduce((sum, v) => sum + v.costo, 0);
         const gananciaNeta = ganancias - inversion;
         
-        const elTotal = document.getElementById('totalVehiculos');
-        const elVendidos = document.getElementById('statsVendidos');
-        const elDisponibles = document.getElementById('statsDisponibles');
-        const elGanancias = document.getElementById('statsGanancias');
-        const elInversion = document.getElementById('statsInversion');
-        const elGananciaNeta = document.getElementById('statsGananciaNeta');
-        
-        if(elTotal) elTotal.innerHTML = total;
-        if(elVendidos) elVendidos.innerHTML = vendidos;
-        if(elDisponibles) elDisponibles.innerHTML = disponibles;
-        if(elGanancias) elGanancias.innerHTML = '$' + ganancias.toLocaleString();
-        if(elInversion) elInversion.innerHTML = '$' + inversion.toLocaleString();
-        if(elGananciaNeta) elGananciaNeta.innerHTML = '$' + gananciaNeta.toLocaleString();
+        document.getElementById('totalVehiculos').innerHTML = total;
+        document.getElementById('statsVendidos').innerHTML = vendidos;
+        document.getElementById('statsDisponibles').innerHTML = disponibles;
+        document.getElementById('statsGanancias').innerHTML = '$' + ganancias.toLocaleString();
+        document.getElementById('statsInversion').innerHTML = '$' + inversion.toLocaleString();
+        document.getElementById('statsGananciaNeta').innerHTML = '$' + gananciaNeta.toLocaleString();
     }
 
     function generarFactura(vehiculo, precioVenta, nombreCliente, ccCliente) {
         const fecha = new Date();
-        const fechaFormateada = fecha.toLocaleDateString('es-CO');
         const facturaHTML = `
-            <div style="font-family: Arial, sans-serif; padding: 20px; background: white; color: black;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px;">
-                    <div><img src="https://i.imgur.com/uzhDkFl.jpeg" alt="Logo JM Autos" style="height: 80px;"></div>
-                    <div style="text-align: right; font-size: 12px;">
-                        <strong>JM Autos S.A.S</strong><br>NIT: 901.567.234-1<br>Cra 9 # 15-32, Valledupar<br>Tel: 605 589 1234
-                    </div>
+            <div style="font-family: Arial; padding: 20px; background: white; color: black;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px;">
+                    <div><img src="https://i.imgur.com/uzhDkFl.jpeg" style="height: 80px;"></div>
+                    <div style="text-align: right;"><strong>JM Autos S.A.S</strong><br>NIT: 901.567.234-1<br>Valledupar<br>Tel: 605 589 1234</div>
                 </div>
                 <div style="text-align: center; margin: 20px 0;">
                     <h1>FACTURA DE VENTA</h1>
-                    <p><strong>No:</strong> JM-${fecha.getFullYear()}${fecha.getMonth()+1}${fecha.getDate()}-${vehiculo.id}</p>
-                    <p><strong>Fecha:</strong> ${fechaFormateada}</p>
-                    <p><strong>Ciudad:</strong> Valledupar</p>
+                    <p><strong>N°:</strong> JM-${fecha.getFullYear()}${fecha.getMonth()+1}${fecha.getDate()}-${vehiculo.id}</p>
+                    <p><strong>Fecha:</strong> ${fecha.toLocaleDateString('es-CO')}</p>
                 </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <div><h3>Cliente</h3>${nombreCliente || 'Cliente Particular'}<br>${ccCliente || 'CC: 12.345.678'}</div>
-                    <div><h3>Vehículo</h3>${vehiculo.titulo}<br>Modelo: ${vehiculo.año}<br>Precio: $${vehiculo.precio.toLocaleString()}</div>
-                </div>
+                <div><h3>Cliente:</h3> ${nombreCliente || 'Cliente Particular'}<br>${ccCliente || 'CC: 12.345.678'}</div>
+                <div style="margin-top: 20px;"><h3>Vehículo:</h3> ${vehiculo.titulo}<br>Año: ${vehiculo.año}</div>
                 <table style="width:100%; border-collapse: collapse; margin-top: 20px;">
                     <tr style="background:#eee;"><th style="border:1px solid #000;">Descripción</th><th style="border:1px solid #000;">Valor</th></tr>
                     <tr><td style="border:1px solid #000;">Vehículo ${vehiculo.titulo}</td><td style="border:1px solid #000;">$${vehiculo.precio.toLocaleString()}</td></tr>
                     <tr><td style="border:1px solid #000;">Descuento</td><td style="border:1px solid #000;">$${(vehiculo.precio - precioVenta).toLocaleString()}</td></tr>
                     <tr><td style="border:1px solid #000;"><strong>Total</strong></td><td style="border:1px solid #000;"><strong>$${precioVenta.toLocaleString()}</strong></td></tr>
                 </table>
-                <div style="margin-top: 20px;"><strong>Forma de Pago:</strong> Transferencia Bancaria - Bancolombia</div>
                 <div style="margin-top: 60px; display: flex; justify-content: space-between;">
                     <div style="text-align: center;"><div style="border-top:1px solid #000; width:200px;"></div>Vendedor<br>JM Autos</div>
                     <div style="text-align: center;"><div style="border-top:1px solid #000; width:200px;"></div>Comprador<br>${nombreCliente || 'Cliente'}</div>
@@ -1241,22 +1336,21 @@
     function toggleChat() { const modal = document.getElementById('chatModal'); modal.style.display = modal.style.display === 'none' ? 'block' : 'none'; }
     function enviarMensaje() {
         const input = document.getElementById('chatInput');
-        const mensaje = input.value.trim();
-        if(!mensaje) return;
+        if(!input.value.trim()) return;
         const chatBody = document.getElementById('chatBody');
-        chatBody.innerHTML += `<p><strong>Tú:</strong> ${mensaje}</p>`;
+        chatBody.innerHTML += `<p><strong>Tú:</strong> ${input.value}</p>`;
         input.value = '';
-        setTimeout(() => { chatBody.innerHTML += `<p style="color:#ffd700;"><strong>JM Autos:</strong> Gracias, un asesor te contactará pronto.</p>`; chatBody.scrollTop = chatBody.scrollHeight; }, 500);
-        chatBody.scrollTop = chatBody.scrollHeight;
+        setTimeout(() => chatBody.innerHTML += `<p style="color:#ffd700;"><strong>JM Autos:</strong> Gracias, un asesor te contactará.</p>`, 500);
     }
     function mostrarLogin() { document.getElementById('modalLogin').style.display = 'flex'; }
     function cerrarModalLogin() { document.getElementById('modalLogin').style.display = 'none'; }
     function login() {
         const user = document.getElementById('loginUser').value;
         const pass = document.getElementById('loginPass').value;
-        if(user === 'admin' && pass === 'admin123') {
+        if(user === 'Josemestremoron' && pass === 'Luismestre19811') {
             document.getElementById('panelFinanzas').style.display = 'block';
             cerrarModalLogin();
+            cargarFacturas();
         } else alert('Usuario o contraseña incorrectos');
     }
     function cerrarSesion() { document.getElementById('panelFinanzas').style.display = 'none'; }
@@ -1265,13 +1359,14 @@
         if(event && event.target) event.target.classList.add('active');
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
         document.getElementById(`tab-${tab}`).classList.add('active');
+        if(tab === 'facturas') cargarFacturas();
     }
     function descargarExcel() {
-        const datos = vehiculos.map(v => ({ ID: v.id, Vehículo: v.titulo, Precio: v.precio, Costo: v.costo, Ganancia: v.precio - v.costo, Estado: v.vendido ? 'Vendido' : 'Disponible', Año: v.año }));
+        const datos = vehiculos.map(v => ({ ID: v.id, Vehículo: v.titulo, Precio: v.precio, Costo: v.costo, Ganancia: v.precio - v.costo, Estado: v.vendido ? 'Vendido' : 'Disponible' }));
         const ws = XLSX.utils.json_to_sheet(datos);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Vehículos');
-        XLSX.writeFile(wb, `vehiculos_jmautos_${new Date().toISOString().slice(0,10)}.xlsx`);
+        XLSX.writeFile(wb, `vehiculos_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 
     // Subir imágenes
@@ -1281,8 +1376,7 @@
         dropZone.addEventListener('dragover', (e) => e.preventDefault());
         dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
-            const files = Array.from(e.dataTransfer.files);
-            procesarImagenes(files);
+            procesarImagenes(Array.from(e.dataTransfer.files));
         });
         fileInput.addEventListener('change', (e) => procesarImagenes(Array.from(e.target.files)));
     }
@@ -1290,10 +1384,7 @@
         files.forEach(file => {
             if(file.type.startsWith('image/')) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    imagenesTemp.push(event.target.result);
-                    mostrarPreview();
-                };
+                reader.onload = (e) => { imagenesTemp.push(e.target.result); mostrarPreview(); };
                 reader.readAsDataURL(file);
             }
         });
@@ -1302,17 +1393,16 @@
         const preview = document.getElementById('imagePreview');
         if(preview) {
             preview.innerHTML = '';
-            imagenesTemp.forEach((img, index) => {
+            imagenesTemp.forEach((img, i) => {
                 const div = document.createElement('div');
                 div.style.position = 'relative';
-                div.innerHTML = `<img src="${img}" class="preview-img"><button onclick="eliminarImagenTemp(${index})" style="position:absolute; top:-8px; right:-8px; background:red; color:white; border:none; border-radius:50%; width:20px; height:20px;">×</button>`;
+                div.innerHTML = `<img src="${img}" class="preview-img"><button onclick="eliminarImagenTemp(${i})" style="position:absolute; top:-8px; right:-8px; background:red; color:white; border:none; border-radius:50%; width:20px; height:20px;">×</button>`;
                 preview.appendChild(div);
             });
         }
     }
-    function eliminarImagenTemp(index) { imagenesTemp.splice(index, 1); mostrarPreview(); }
+    function eliminarImagenTemp(i) { imagenesTemp.splice(i, 1); mostrarPreview(); }
 
-    // Iniciar
     cargarVehiculos();
 </script>
 </body>
