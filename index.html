@@ -45,7 +45,7 @@
         .grid-vehiculos { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
         .tarjeta { background: linear-gradient(135deg, #1e1e1e, #2a2a2a); border-radius: 16px; overflow: hidden; transition: all 0.4s cubic-bezier(0.175,0.885,0.32,1.275); cursor: pointer; border: 1px solid #333; }
         .tarjeta:hover { transform: translateY(-10px) scale(1.02); border-color: #ffd700; }
-        .tarjeta-imagen { width: 100%; height: 220px; object-fit: cover; }
+        .tarjeta-imagen { width: 100%; height: 220px; object-fit: cover; background: linear-gradient(135deg, #1a1a1a, #2a2a2a); }
         .tarjeta-contenido { padding: 1.2rem; }
         .tarjeta-titulo { font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem; }
         .tarjeta-precio { font-size: 1.3rem; color: #ffd700; font-weight: bold; margin: 0.5rem 0; }
@@ -73,7 +73,7 @@
         .social-icons a { margin-right: 1rem; font-size: 1.5rem; }
         .copyright { text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid #333; color: #666; }
         
-        /* Panel Admin */
+        /* Panel Admin Estilos */
         .panel-admin { background: linear-gradient(135deg, #0a0a0a, #1a1a1a); margin: 2rem 0; padding: 2rem; border-radius: 20px; border: 2px solid #ffd700; display: none; }
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; border-bottom: 1px solid #ffd700; padding-bottom: 1rem; }
         .admin-header h2 { font-size: 1.8rem; color: #ffd700; }
@@ -94,12 +94,16 @@
         .kpi-card { background: linear-gradient(135deg, #1e1e1e, #2a2a2a); padding: 1rem; border-radius: 12px; text-align: center; }
         .kpi-label { font-size: 0.8rem; color: #aaa; }
         .kpi-value { font-size: 1.3rem; font-weight: bold; color: #ffd700; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 0.8rem; text-align: left; border-bottom: 1px solid #333; }
-        th { background: #2a2a2a; color: #ffd700; }
+        
+        /* Tabla estilos */
+        .tabla-vehiculos, .tabla-productos, .tabla-facturas { overflow-x: auto; }
+        .tabla-vehiculos table, .tabla-productos table, .tabla-facturas table { width: 100%; border-collapse: collapse; }
+        .tabla-vehiculos th, .tabla-productos th, .tabla-facturas th { background: #2a2a2a; color: #ffd700; padding: 12px; text-align: left; }
+        .tabla-vehiculos td, .tabla-productos td, .tabla-facturas td { padding: 10px; border-bottom: 1px solid #333; }
         .btn-editar { background: #ffc107; color: #000; padding: 0.3rem 0.6rem; border-radius: 8px; cursor: pointer; border: none; margin: 0 2px; }
         .btn-eliminar { background: #dc3545; color: #fff; padding: 0.3rem 0.6rem; border-radius: 8px; cursor: pointer; border: none; }
         .btn-revertir { background: #17a2b8; color: #fff; padding: 0.3rem 0.6rem; border-radius: 8px; cursor: pointer; border: none; }
+        .btn-subir { background: #28a745; color: white; padding: 0.8rem; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .form-agregar { background: linear-gradient(135deg, #1e1e1e, #2a2a2a); padding: 1.5rem; border-radius: 16px; margin-bottom: 2rem; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
         .form-group { display: flex; flex-direction: column; }
@@ -108,7 +112,8 @@
         .drop-zone { border: 2px dashed #ffd700; border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; background: rgba(255,215,0,0.05); }
         .preview-gallery { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
         .preview-img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ffd700; }
-        .btn-subir { background: #28a745; color: white; padding: 0.8rem; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 1rem; }
+        
+        /* Modales */
         .modal-venta { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; justify-content: center; align-items: center; }
         .modal-venta-content { background: linear-gradient(135deg, #1e1e1e, #2a2a2a); padding: 2rem; border-radius: 20px; max-width: 500px; width: 90%; border: 2px solid #ffd700; }
         .modal-venta-content h2 { color: #ffd700; text-align: center; margin-bottom: 1rem; }
@@ -120,6 +125,18 @@
         .modal-content { background: #1e1e1e; padding: 2rem; border-radius: 16px; max-width: 500px; width: 90%; border: 1px solid #ffd700; }
         .modal-content input { width: 100%; padding: 0.8rem; margin: 0.8rem 0; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: white; }
         @media (max-width: 768px) { .container { padding: 1rem; } .logo-text { font-size: 1.8rem; } .logo img { height: 80px; } .main-content { margin-top: 140px; } .charts-grid { grid-template-columns: 1fr; } }
+        
+        .img-placeholder {
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 0.9rem;
+            text-align: center;
+            height: 100%;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -231,13 +248,26 @@
             </div>
 
             <div id="tab-vehiculos" class="tab-content">
-                <div style="overflow-x: auto;"><?php
-<thead><tr><th>ID</th><th>Vehículo</th><th>Precio</th><th>Costo</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="tablaVehiculos"></tbody></table></div>
+                <div class="tabla-vehiculos">
+                    <table>
+                        <thead>
+                            <tr><th>ID</th><th>Vehículo</th><th>Precio</th><th>Costo</th><th>Estado</th><th>Acciones</th></tr>
+                        </thead>
+                        <tbody id="tablaVehiculos"></tbody>
+                    </table>
+                </div>
             </div>
 
             <div id="tab-productos" class="tab-content">
-                <div style="margin-bottom: 1rem;"><button class="btn-subir" onclick="abrirModalAgregarProducto()" style="background:#28a745;"><i class="fas fa-plus"></i> Agregar Producto</button></div>
-                <div style="overflow-x: auto;"><table><thead><tr><th>ID</th><th>Producto</th><th>Precio</th><th>Costo</th><th>Stock</th><th>Acciones</th></tr></thead><tbody id="tablaProductos"></tbody></table></div>
+                <div style="margin-bottom: 1rem;"><button class="btn-subir" onclick="abrirModalAgregarProducto()"><i class="fas fa-plus"></i> Agregar Producto</button></div>
+                <div class="tabla-productos">
+                    <table>
+                        <thead>
+                            <tr><th>ID</th><th>Producto</th><th>Precio</th><th>Costo</th><th>Stock</th><th>Acciones</th></tr>
+                        </thead>
+                        <tbody id="tablaProductos"></tbody>
+                    </table>
+                </div>
             </div>
 
             <div id="tab-agregar" class="tab-content">
@@ -259,7 +289,14 @@
             </div>
 
             <div id="tab-facturas" class="tab-content">
-                <div style="overflow-x: auto;">90s<thead><tr><th>N° Factura</th><th>Fecha</th><th>Vehículo</th><th>Comprador</th><th>Valor</th><th>Acciones</th></tr></thead><tbody id="tablaFacturas"></tbody></table></div>
+                <div class="tabla-facturas">
+                    <table>
+                        <thead>
+                            <tr><th>N° Factura</th><th>Fecha</th><th>Vehículo</th><th>Comprador</th><th>Valor</th><th>Acciones</th></tr>
+                        </thead>
+                        <tbody id="tablaFacturas"></tbody>
+                    </table>
+                </div>
             </div>
 
             <div id="tab-finanzas" class="tab-content">
@@ -271,7 +308,7 @@
             </div>
 
             <div id="tab-reportes" class="tab-content">
-                <button onclick="descargarExcelCompleto()" style="background:#28a745; padding:0.8rem 1.5rem; border-radius:8px; border:none; cursor:pointer; margin-right:1rem;"><i class="fas fa-file-excel"></i> Descargar Excel (Autos + Productos)</button>
+                <button onclick="descargarExcelCompleto()" class="btn-subir" style="margin-right:1rem;"><i class="fas fa-file-excel"></i> Descargar Excel (Autos + Productos)</button>
                 <button onclick="descargarExcelFinanciero()" style="background:#17a2b8; padding:0.8rem 1.5rem; border-radius:8px; border:none; cursor:pointer;"><i class="fas fa-chart-line"></i> Descargar Solo Finanzas</button>
             </div>
         </div>
@@ -330,7 +367,7 @@
     <div class="modal-venta-content">
         <div style="text-align: center;"><img src="https://i.imgur.com/uzhDkFl.jpeg" style="height: 60px;"></div>
         <h2>🛒 Agregar Producto</h2>
-        <input type="text" id="prodNombre" placeholder="Nombre del producto (ej: Limpiador de pastillas)">
+        <input type="text" id="prodNombre" placeholder="Nombre del producto">
         <input type="number" id="prodPrecio" placeholder="Precio de venta">
         <input type="number" id="prodCosto" placeholder="Costo de compra">
         <input type="number" id="prodStock" placeholder="Cantidad en stock">
@@ -372,7 +409,9 @@
     let ventaChart = null, gananciasChart = null;
     let adminLogueado = false;
 
-    // ==================== INICIALIZACIÓN ====================
+    // Imagen por defecto (SVG con texto "Sin imagen disponible")
+    const imagenDefault = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%231a1a1a'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23666' font-size='16'%3E📷 Sin imagen disponible%3C/text%3E%3C/svg%3E";
+
     async function cargarDatosPublicos() {
         await cargarVehiculos();
         await cargarProductos();
@@ -432,7 +471,6 @@
     async function actualizarIdVehiculo() { let max = 0; vehiculos.forEach(v => { if(v.id > max) max = v.id; }); return max + 1; }
     async function actualizarIdProducto() { let max = 0; productos.forEach(p => { if(p.id > max) max = p.id; }); return max + 1; }
 
-    // ==================== ADMIN LOGIN ====================
     function mostrarLoginAdmin() { document.getElementById('modalLoginAdmin').style.display = 'flex'; }
     function cerrarModalLoginAdmin() { document.getElementById('modalLoginAdmin').style.display = 'none'; }
     
@@ -463,7 +501,6 @@
         document.getElementById('loginPass').value = '';
     }
 
-    // ==================== VEHÍCULOS ====================
     async function agregarVehiculo() {
         if(!adminLogueado) return;
         let titulo = document.getElementById('newTitulo').value;
@@ -471,7 +508,11 @@
         let costo = parseInt(document.getElementById('newCosto').value);
         if(!titulo || !precio || !costo) { alert("Completa título, precio y costo"); return; }
         let nuevoId = await actualizarIdVehiculo();
-        let nuevo = { id: nuevoId, titulo, descripcion: document.getElementById('newDescripcion').value || "Sin descripción", precio, costo, año: parseInt(document.getElementById('newAnio').value) || new Date().getFullYear(), kilometros: document.getElementById('newKm').value ? parseInt(document.getElementById('newKm').value) : null, tipo: document.getElementById('newTipo').value, imagenPrincipal: imagenesTemp[0] || "https://i.imgur.com/ZQjXILs.jpg", galeria: [...imagenesTemp], whatsapp: document.getElementById('newWhatsapp').value || "573167542304", vendido: false, precioVentaReal: null, fechaVenta: null };
+        
+        let galeriaUrls = [...imagenesTemp];
+        let imagenPrincipal = galeriaUrls.length > 0 ? galeriaUrls[0] : imagenDefault;
+        
+        let nuevo = { id: nuevoId, titulo, descripcion: document.getElementById('newDescripcion').value || "Sin descripción", precio, costo, año: parseInt(document.getElementById('newAnio').value) || new Date().getFullYear(), kilometros: document.getElementById('newKm').value ? parseInt(document.getElementById('newKm').value) : null, tipo: document.getElementById('newTipo').value, imagenPrincipal: imagenPrincipal, galeria: galeriaUrls, whatsapp: document.getElementById('newWhatsapp').value || "573167542304", vendido: false, precioVentaReal: null, fechaVenta: null };
         await guardarVehiculo(nuevo);
         vehiculos.push(nuevo);
         document.getElementById('newTitulo').value = ''; document.getElementById('newPrecio').value = ''; document.getElementById('newCosto').value = ''; document.getElementById('newAnio').value = ''; document.getElementById('newKm').value = ''; document.getElementById('newDescripcion').value = ''; document.getElementById('newWhatsapp').value = '';
@@ -510,7 +551,6 @@
 
     async function eliminarVehiculo(id) { if(confirm('¿Eliminar este vehículo?')) { await eliminarVehiculoFirebase(id); await cargarVehiculos(); } }
 
-    // ==================== PRODUCTOS ====================
     function abrirModalAgregarProducto() { document.getElementById('modalProducto').style.display = 'flex'; }
     function cerrarModalProducto() { document.getElementById('modalProducto').style.display = 'none'; }
     
@@ -534,7 +574,6 @@
     async function eliminarProducto(id) { if(confirm('¿Eliminar este producto?')) { await eliminarProductoFirebase(id); await cargarProductos(); } }
     async function actualizarStock(id, nuevoStock) { const p = productos.find(p => p.id === id); if(p) { p.stock = parseInt(nuevoStock); await guardarProducto(p); await cargarProductos(); } }
 
-    // ==================== RENDERIZACIÓN ====================
     function renderizarCatalogo() {
         const grid = document.getElementById('gridVehiculos');
         if(!grid) return;
@@ -544,7 +583,9 @@
                 let tarjeta = document.createElement('div');
                 tarjeta.className = 'tarjeta';
                 tarjeta.onclick = () => verDetalle(v.id);
-                tarjeta.innerHTML = `<img src="${v.imagenPrincipal}" class="tarjeta-imagen"><div class="tarjeta-contenido"><div class="tarjeta-titulo">${v.titulo}</div><div class="tarjeta-precio">$${v.precio.toLocaleString()}</div><small>${v.año} | ${v.kilometros ? v.kilometros.toLocaleString()+' km' : 'KM no especificado'}</small></div>`;
+                let imgSrc = v.imagenPrincipal;
+                if(!imgSrc || imgSrc === "") imgSrc = imagenDefault;
+                tarjeta.innerHTML = `<img src="${imgSrc}" class="tarjeta-imagen" onerror="this.src='${imagenDefault}'"><div class="tarjeta-contenido"><div class="tarjeta-titulo">${v.titulo}</div><div class="tarjeta-precio">$${v.precio.toLocaleString()}</div><small>${v.año} | ${v.kilometros ? v.kilometros.toLocaleString()+' km' : 'KM no especificado'}</small></div>`;
                 grid.appendChild(tarjeta);
             }
         });
@@ -554,8 +595,12 @@
         const v = vehiculos.find(v => v.id === id);
         if(!v) return;
         let galeria = '';
-        v.galeria?.forEach(img => galeria += `<img src="${img}" onclick="abrirLightbox('${img}')">`);
-        document.getElementById('detalleInfo').innerHTML = `<h2>${v.titulo}</h2><div class="galeria-principal"><img src="${v.imagenPrincipal}" onclick="abrirLightbox('${v.imagenPrincipal}')"></div><div class="galeria-miniaturas">${galeria}</div><p><strong>Descripción:</strong> ${v.descripcion}</p><p><strong>Año:</strong> ${v.año} | <strong>KM:</strong> ${v.kilometros ? v.kilometros.toLocaleString()+' km' : 'No especificado'}</p><p><strong>Precio:</strong> $${v.precio.toLocaleString()}</p><a href="https://wa.me/${v.whatsapp}?text=Hola%20JM%20Autos,%20estoy%20interesado%20en%20${encodeURIComponent(v.titulo)}" class="whatsapp-btn" target="_blank"><i class="fab fa-whatsapp"></i> Consultar</a>`;
+        if(v.galeria && v.galeria.length > 0) {
+            v.galeria.forEach(img => galeria += `<img src="${img}" onclick="abrirLightbox('${img}')">`);
+        } else {
+            galeria = `<img src="${imagenDefault}" onclick="abrirLightbox('${imagenDefault}')">`;
+        }
+        document.getElementById('detalleInfo').innerHTML = `<h2>${v.titulo}</h2><div class="galeria-principal"><img src="${v.imagenPrincipal}" onerror="this.src='${imagenDefault}'" onclick="abrirLightbox('${v.imagenPrincipal}')"></div><div class="galeria-miniaturas">${galeria}</div><p><strong>Descripción:</strong> ${v.descripcion}</p><p><strong>Año:</strong> ${v.año} | <strong>KM:</strong> ${v.kilometros ? v.kilometros.toLocaleString()+' km' : 'No especificado'}</p><p><strong>Precio:</strong> $${v.precio.toLocaleString()}</p><a href="https://wa.me/${v.whatsapp}?text=Hola%20JM%20Autos,%20estoy%20interesado%20en%20${encodeURIComponent(v.titulo)}" class="whatsapp-btn" target="_blank"><i class="fab fa-whatsapp"></i> Consultar</a>`;
         document.getElementById('modalDetalle').style.display = 'block';
     }
 
@@ -609,7 +654,6 @@
 
     async function verFactura(id) { const f = facturas.find(f => f.id === id); if(f) generarFacturaDesdeHistorial(f); }
 
-    // ==================== ESTADÍSTICAS Y GRÁFICOS ====================
     function actualizarEstadisticas() {
         if(!adminLogueado) return;
         let vendidos = vehiculos.filter(v => v.vendido);
@@ -647,24 +691,15 @@
         if(ctxG) { if(gananciasChart) gananciasChart.destroy(); gananciasChart = new Chart(ctxG, { type: 'pie', data: { labels: gananciasPorVeh.map(v=>v.titulo), datasets: [{ data: gananciasPorVeh.map(v=>v.ganancia), backgroundColor: ['#ffd700','#ffaa00','#ff7700','#ff5500'] }] }, options: { responsive: true } }); }
     }
 
-    // ==================== FACTURAS ====================
     function generarFactura(v, precioVenta, nombre, cc, metodo) {
         let fecha = new Date();
-        let html = `<div id="facturaPDF" style="font-family:Arial;padding:20px;background:white;color:black;width:100%;"><div style="display:flex;justify-content:space-between;border-bottom:2px solid #000;padding-bottom:10px;"><div><img src="https://i.imgur.com/uzhDkFl.jpeg" style="height:80px;"></div><div style="text-align:right;"><strong>JM Autos S.A.S</strong><br>NIT:901.567.234-1<br>Valledupar<br>Tel:6055891234</div></div><div style="text-align:center;margin:20px 0;"><h1>FACTURA DE VENTA</h1><p><strong>N°:</strong> JM-${Date.now()}</p><p><strong>Fecha:</strong> ${fecha.toLocaleDateString('es-CO')}</p></div><div><h3>Cliente:</h3> ${nombre}<br>${cc}</div><div style="margin-top:20px;"><h3>Vehículo:</h3> ${v.titulo}<br>Año: ${v.año}</div><div><h3>Método de Pago:</h3> ${metodo}</div><table style="width:100%;border-collapse:collapse;margin-top:20px;"><tr style="background:#eee;"><th style="border:1px solid #000;padding:8px;">Descripción</th><th style="border:1px solid #000;padding:8px;">Valor</th></tr>
-                <tr><td style="border:1px solid #000;padding:8px;">Vehículo ${v.titulo}</td><td style="border:1px solid #000;padding:8px;text-align:right;">$${v.precio.toLocaleString()}</td></tr>
-                <tr><td style="border:1px solid #000;padding:8px;">Descuento</td><td style="border:1px solid #000;padding:8px;text-align:right;">$${(v.precio-precioVenta).toLocaleString()}</td></tr>
-                <tr><td style="border:1px solid #000;padding:8px;"><strong>Total</strong></td><td style="border:1px solid #000;padding:8px;text-align:right;"><strong>$${precioVenta.toLocaleString()}</strong></td></tr>
-            </table>
-            <div style="margin-top:60px;display:flex;justify-content:space-between;"><div style="text-align:center;"><div style="border-top:1px solid #000;width:200px;"></div>Vendedor<br>JM Autos</div><div style="text-align:center;"><div style="border-top:1px solid #000;width:200px;"></div>Comprador<br>${nombre}</div></div></div>`;
+        let html = `<div id="facturaPDF" style="font-family:Arial;padding:20px;background:white;color:black;width:100%;"><div style="display:flex;justify-content:space-between;border-bottom:2px solid #000;padding-bottom:10px;"><div><img src="https://i.imgur.com/uzhDkFl.jpeg" style="height:80px;"></div><div style="text-align:right;"><strong>JM Autos S.A.S</strong><br>NIT:901.567.234-1<br>Valledupar<br>Tel:6055891234</div></div><div style="text-align:center;margin:20px 0;"><h1>FACTURA DE VENTA</h1><p><strong>N°:</strong> JM-${Date.now()}</p><p><strong>Fecha:</strong> ${fecha.toLocaleDateString('es-CO')}</p></div><div><h3>Cliente:</h3> ${nombre}<br>${cc}</div><div style="margin-top:20px;"><h3>Vehículo:</h3> ${v.titulo}<br>Año: ${v.año}</div><div><h3>Método de Pago:</h3> ${metodo}</div><table style="width:100%;border-collapse:collapse;margin-top:20px;"><tr style="background:#eee;"><th style="border:1px solid #000;padding:8px;">Descripción</th><th style="border:1px solid #000;padding:8px;">Valor</th></tr><tr><td style="border:1px solid #000;padding:8px;">Vehículo ${v.titulo}</td><td style="border:1px solid #000;padding:8px;text-align:right;">$${v.precio.toLocaleString()}</td></tr><tr><td style="border:1px solid #000;padding:8px;">Descuento</td><td style="border:1px solid #000;padding:8px;text-align:right;">$${(v.precio-precioVenta).toLocaleString()}</td></tr><tr><td style="border:1px solid #000;padding:8px;"><strong>Total</strong></td><td style="border:1px solid #000;padding:8px;text-align:right;"><strong>$${precioVenta.toLocaleString()}</strong></td></tr></table><div style="margin-top:60px;display:flex;justify-content:space-between;"><div style="text-align:center;"><div style="border-top:1px solid #000;width:200px;"></div>Vendedor<br>JM Autos</div><div style="text-align:center;"><div style="border-top:1px solid #000;width:200px;"></div>Comprador<br>${nombre}</div></div></div>`;
         document.getElementById('contenidoFactura').innerHTML = html;
         document.getElementById('modalFactura').style.display = 'flex';
     }
 
     function generarFacturaDesdeHistorial(f) {
-        let html = `<div id="facturaPDF" style="font-family:Arial;padding:20px;background:white;color:black;width:100%;"><div style="display:flex;justify-content:space-between;border-bottom:2px solid #000;padding-bottom:10px;"><div><img src="https://i.imgur.com/uzhDkFl.jpeg" style="height:80px;"></div><div style="text-align:right;"><strong>JM Autos S.A.S</strong><br>NIT:901.567.234-1<br>Valledupar</div></div><div style="text-align:center;margin:20px 0;"><h1>FACTURA DE VENTA</h1><p><strong>N°:</strong> ${f.numero}</p><p><strong>Fecha:</strong> ${f.fecha}</p></div><div><h3>Cliente:</h3> ${f.comprador}<br>${f.cc}</div><div style="margin-top:20px;"><h3>Vehículo:</h3> ${f.vehiculo}</div><table style="width:100%;border-collapse:collapse;margin-top:20px;"><tr style="background:#eee;"><th style="border:1px solid #000;padding:8px;">Descripción</th><th style="border:1px solid #000;padding:8px;">Valor</th> </tr>
-                <tr><td style="border:1px solid #000;padding:8px;">Total</td><td style="border:1px solid #000;padding:8px;text-align:right;"><strong>$${f.valor.toLocaleString()}</strong></td> </tr>
-            </table>
-            <div style="margin-top:60px;display:flex;justify-content:space-between;"><div style="text-align:center;"><div style="border-top:1px solid #000;width:200px;"></div>Vendedor<br>JM Autos</div><div style="text-align:center;"><div style="border-top:1px solid #000;width:200px;"></div>Comprador<br>${f.comprador}</div></div></div>`;
+        let html = `<div id="facturaPDF" style="font-family:Arial;padding:20px;background:white;color:black;width:100%;"><div style="display:flex;justify-content:space-between;border-bottom:2px solid #000;padding-bottom:10px;"><div><img src="https://i.imgur.com/uzhDkFl.jpeg" style="height:80px;"></div><div style="text-align:right;"><strong>JM Autos S.A.S</strong><br>NIT:901.567.234-1<br>Valledupar</div></div><div style="text-align:center;margin:20px 0;"><h1>FACTURA DE VENTA</h1><p><strong>N°:</strong> ${f.numero}</p><p><strong>Fecha:</strong> ${f.fecha}</p></div><div><h3>Cliente:</h3> ${f.comprador}<br>${f.cc}</div><div style="margin-top:20px;"><h3>Vehículo:</h3> ${f.vehiculo}</div><table style="width:100%;border-collapse:collapse;margin-top:20px;"><tr style="background:#eee;"><th style="border:1px solid #000;padding:8px;">Descripción</th><th style="border:1px solid #000;padding:8px;">Valor</th></tr><tr><td style="border:1px solid #000;padding:8px;">Total</td><td style="border:1px solid #000;padding:8px;text-align:right;"><strong>$${f.valor.toLocaleString()}</strong></td></tr></table><div style="margin-top:60px;display:flex;justify-content:space-between;"><div style="text-align:center;"><div style="border-top:1px solid #000;width:200px;"></div>Vendedor<br>JM Autos</div><div style="text-align:center;"><div style="border-top:1px solid #000;width:200px;"></div>Comprador<br>${f.comprador}</div></div></div>`;
         document.getElementById('contenidoFactura').innerHTML = html;
         document.getElementById('modalFactura').style.display = 'flex';
     }
@@ -673,144 +708,26 @@
     function imprimirFactura() { let contenido = document.getElementById('contenidoFactura').innerHTML; let w = window.open('', '_blank'); w.document.write(`<html><head><title>Factura JM Autos</title><style>body{font-family:Arial;padding:20px;}</style></head><body>${contenido}</body></html>`); w.document.close(); w.print(); }
     function descargarFacturaPDF() { let element = document.getElementById('contenidoFactura'); html2pdf().set({ margin: 0.5, filename: `factura_${Date.now()}.pdf` }).from(element).save(); }
 
-    // ==================== EXCEL PROFESIONAL ====================
     function descargarExcelCompleto() {
         if(!adminLogueado) return;
-        
-        let datosAutos = vehiculos.map(v => ({ 
-            "ID": v.id, 
-            "VEHÍCULO": v.titulo, 
-            "PRECIO VENTA": v.precio, 
-            "COSTO": v.costo, 
-            "GANANCIA": v.precio - v.costo, 
-            "ESTADO": v.vendido ? 'VENDIDO' : 'DISPONIBLE', 
-            "AÑO": v.año 
-        }));
-        
-        let datosProductos = productos.map(p => ({ 
-            "ID": p.id, 
-            "PRODUCTO": p.nombre, 
-            "PRECIO VENTA": p.precio, 
-            "COSTO": p.costo, 
-            "GANANCIA": p.precio - p.costo, 
-            "STOCK": p.stock,
-            "VALOR INVENTARIO": p.precio * p.stock
-        }));
-        
-        let ws1 = XLSX.utils.json_to_sheet(datosAutos);
-        let ws2 = XLSX.utils.json_to_sheet(datosProductos);
-        
-        ws1['!cols'] = [{wch:8},{wch:40},{wch:15},{wch:15},{wch:15},{wch:12},{wch:10}];
-        ws2['!cols'] = [{wch:8},{wch:45},{wch:15},{wch:15},{wch:15},{wch:10},{wch:18}];
-        
-        let totalAutos = vehiculos.length;
-        let autosVendidos = vehiculos.filter(v=>v.vendido).length;
-        let gananciasAutos = vehiculos.filter(v=>v.vendido).reduce((s,v)=>s+(v.precioVentaReal||0),0);
-        let inversionAutos = vehiculos.filter(v=>v.vendido).reduce((s,v)=>s+v.costo,0);
-        let gananciaNeta = gananciasAutos - inversionAutos;
-        let totalProductos = productos.length;
-        let valorInventario = productos.reduce((s,p)=>s+(p.precio * p.stock),0);
-        let valorCostoInventario = productos.reduce((s,p)=>s+(p.costo * p.stock),0);
-        let gananciaPotencialProductos = valorInventario - valorCostoInventario;
-        
-        let resumenFinanciero = [
-            ["=".repeat(70)],
-            ["JM AUTOS - REPORTE FINANCIERO", "", "", "", "", "", "", ""],
-            ["Fecha:", new Date().toLocaleString(), "", "", "", "", "", ""],
-            ["=".repeat(70)],
-            ["📊 RESUMEN DE AUTOS", "", "", "", "", "", "", ""],
-            ["Total Autos en Inventario", "", totalAutos, "", "", "", "", ""],
-            ["Autos Vendidos", "", autosVendidos, "", "", "", "", ""],
-            ["Ganancias por Autos", "", "$ " + gananciasAutos.toLocaleString(), "", "", "", "", ""],
-            ["Inversión en Autos Vendidos", "", "$ " + inversionAutos.toLocaleString(), "", "", "", "", ""],
-            ["Ganancia Neta (Autos)", "", "$ " + gananciaNeta.toLocaleString(), "", "", "", "", ""],
-            ["", "", "", "", "", "", "", ""],
-            ["🛒 RESUMEN DE PRODUCTOS", "", "", "", "", "", "", ""],
-            ["Total Productos en Inventario", "", totalProductos, "", "", "", "", ""],
-            ["Valor Inventario (Precio Venta)", "", "$ " + valorInventario.toLocaleString(), "", "", "", "", ""],
-            ["Valor Inventario (Costo)", "", "$ " + valorCostoInventario.toLocaleString(), "", "", "", "", ""],
-            ["Ganancia Potencial Productos", "", "$ " + gananciaPotencialProductos.toLocaleString(), "", "", "", "", ""],
-            ["", "", "", "", "", "", "", ""],
-            ["📈 INDICADORES CLAVE", "", "", "", "", "", "", ""],
-            ["Margen de Ganancia (Autos)", "", gananciaNeta > 0 ? ((gananciaNeta / gananciasAutos) * 100).toFixed(1) + "%" : "0%", "", "", "", "", ""],
-            ["Rotación de Inventario", "", ((autosVendidos / totalAutos) * 100).toFixed(1) + "%", "", "", "", "", ""],
-            ["ROI (Retorno Inversión)", "", inversionAutos > 0 ? ((gananciaNeta / inversionAutos) * 100).toFixed(1) + "%" : "0%", "", "", "", "", ""],
-            ["=".repeat(70)]
-        ];
-        
-        let ws3 = XLSX.utils.aoa_to_sheet(resumenFinanciero);
-        ws3['!cols'] = [{wch:35},{wch:5},{wch:25},{wch:5},{wch:5},{wch:5},{wch:5},{wch:5}];
-        
+        let datosAutos = vehiculos.map(v => ({ "ID": v.id, "VEHÍCULO": v.titulo, "PRECIO": v.precio, "COSTO": v.costo, "GANANCIA": v.precio - v.costo, "ESTADO": v.vendido ? 'Vendido' : 'Disponible' }));
+        let datosProductos = productos.map(p => ({ "ID": p.id, "PRODUCTO": p.nombre, "PRECIO": p.precio, "COSTO": p.costo, "GANANCIA": p.precio - p.costo, "STOCK": p.stock }));
+        let ws1 = XLSX.utils.json_to_sheet(datosAutos); let ws2 = XLSX.utils.json_to_sheet(datosProductos);
         let wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws1, 'Inventario Autos');
         XLSX.utils.book_append_sheet(wb, ws2, 'Inventario Productos');
-        XLSX.utils.book_append_sheet(wb, ws3, 'Resumen Financiero');
-        
-        XLSX.writeFile(wb, `JM_Autos_Reporte_${new Date().toISOString().slice(0,10)}.xlsx`);
+        XLSX.writeFile(wb, `JM_Autos_Inventario_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 
     function descargarExcelFinanciero() {
         if(!adminLogueado) return;
-        
-        let totalAutos = vehiculos.length;
-        let autosVendidos = vehiculos.filter(v=>v.vendido).length;
-        let gananciasAutos = vehiculos.filter(v=>v.vendido).reduce((s,v)=>s+(v.precioVentaReal||0),0);
-        let inversionAutos = vehiculos.filter(v=>v.vendido).reduce((s,v)=>s+v.costo,0);
-        let gananciaNeta = gananciasAutos - inversionAutos;
-        let totalProductos = productos.length;
-        let valorInventario = productos.reduce((s,p)=>s+(p.precio * p.stock),0);
-        let valorCostoInventario = productos.reduce((s,p)=>s+(p.costo * p.stock),0);
-        let gananciaPotencialProductos = valorInventario - valorCostoInventario;
-        
-        let meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-        let ventasMes = new Array(12).fill(0);
-        vehiculos.filter(v => v.vendido && v.fechaVenta).forEach(v => { let mes = new Date(v.fechaVenta).getMonth(); ventasMes[mes]++; });
-        
-        let datosVentas = [["📊 VENTAS POR MES", "", ""]];
-        for(let i = 0; i < 12; i++) {
-            if(ventasMes[i] > 0) {
-                let barra = "█".repeat(Math.min(ventasMes[i], 20));
-                datosVentas.push([meses[i], ventasMes[i] + " vehículo(s)", barra]);
-            }
-        }
-        
-        let resumen = [
-            ["=".repeat(60)],
-            ["JM AUTOS - REPORTE FINANCIERO", "", "", "", "", ""],
-            ["Fecha:", new Date().toLocaleString(), "", "", "", ""],
-            ["=".repeat(60)],
-            ["📊 AUTOS", "", "", "", "", ""],
-            ["Total Autos", "", totalAutos, "", "", ""],
-            ["Autos Vendidos", "", autosVendidos, "", "", ""],
-            ["Ganancias por Autos", "", "$ " + gananciasAutos.toLocaleString(), "", "", ""],
-            ["Inversión en Autos Vendidos", "", "$ " + inversionAutos.toLocaleString(), "", "", ""],
-            ["Ganancia Neta (Autos)", "", "$ " + gananciaNeta.toLocaleString(), "", "", ""],
-            ["", "", "", "", "", ""],
-            ["🛒 PRODUCTOS", "", "", "", "", ""],
-            ["Total Productos", "", totalProductos, "", "", ""],
-            ["Valor Inventario (Precio Venta)", "", "$ " + valorInventario.toLocaleString(), "", "", ""],
-            ["Valor Inventario (Costo)", "", "$ " + valorCostoInventario.toLocaleString(), "", "", ""],
-            ["Ganancia Potencial", "", "$ " + gananciaPotencialProductos.toLocaleString(), "", "", ""],
-            ["", "", "", "", "", ""],
-            ["📈 INDICADORES", "", "", "", "", ""],
-            ["Margen de Ganancia", "", gananciaNeta > 0 ? ((gananciaNeta / gananciasAutos) * 100).toFixed(1) + "%" : "0%", "", "", ""],
-            ["Rotación de Inventario", "", ((autosVendidos / totalAutos) * 100).toFixed(1) + "%", "", "", ""],
-            ["ROI", "", inversionAutos > 0 ? ((gananciaNeta / inversionAutos) * 100).toFixed(1) + "%" : "0%", "", "", ""],
-            ["=".repeat(60)],
-            ["", "", "", "", "", ""],
-            ["📅 DETALLE DE VENTAS POR MES", "", "", "", "", ""],
-            ...datosVentas
-        ];
-        
+        let resumen = [['JM AUTOS - REPORTE FINANCIERO', new Date().toLocaleString()], [], ['Total Autos', vehiculos.length], ['Autos Vendidos', vehiculos.filter(v=>v.vendido).length], ['Ganancias', '$'+vehiculos.filter(v=>v.vendido).reduce((s,v)=>s+(v.precioVentaReal||0),0).toLocaleString()]];
         let ws = XLSX.utils.aoa_to_sheet(resumen);
-        ws['!cols'] = [{wch:30},{wch:10},{wch:20},{wch:5},{wch:5},{wch:5}];
-        
         let wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Reporte Financiero');
+        XLSX.utils.book_append_sheet(wb, ws, 'Finanzas');
         XLSX.writeFile(wb, `JM_Autos_Finanzas_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 
-    // ==================== UI ====================
     function toggleMenu() { document.getElementById('sideMenu').classList.toggle('open'); document.getElementById('overlay').classList.toggle('active'); }
     function cambiarSeccion(s) { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.getElementById(s).classList.add('active'); }
     function cerrarDetalle() { document.getElementById('modalDetalle').style.display = 'none'; }
@@ -829,7 +746,6 @@
         if(tab === 'finanzas') { actualizarGraficos(); actualizarKPIs(); }
     }
 
-    // Subir imágenes
     let dropZone = document.getElementById('dropZone'), fileInput = document.getElementById('fileInput');
     if(dropZone) {
         dropZone.addEventListener('dragover', (e) => e.preventDefault());
