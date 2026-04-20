@@ -231,7 +231,8 @@
             </div>
 
             <div id="tab-vehiculos" class="tab-content">
-                <div style="overflow-x: auto;"></td><thead><tr><th>ID</th><th>Vehículo</th><th>Precio</th><th>Costo</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="tablaVehiculos"></tbody></table></div>
+                <div style="overflow-x: auto;"><?php
+<thead><tr><th>ID</th><th>Vehículo</th><th>Precio</th><th>Costo</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="tablaVehiculos"></tbody></table></div>
             </div>
 
             <div id="tab-productos" class="tab-content">
@@ -258,7 +259,7 @@
             </div>
 
             <div id="tab-facturas" class="tab-content">
-                <div style="overflow-x: auto;">20百<thead><tr><th>N° Factura</th><th>Fecha</th><th>Vehículo</th><th>Comprador</th><th>Valor</th><th>Acciones</th></tr></thead><tbody id="tablaFacturas"></tbody></table></div>
+                <div style="overflow-x: auto;">90s<thead><tr><th>N° Factura</th><th>Fecha</th><th>Vehículo</th><th>Comprador</th><th>Valor</th><th>Acciones</th></tr></thead><tbody id="tablaFacturas"></tbody></table></div>
             </div>
 
             <div id="tab-finanzas" class="tab-content">
@@ -649,8 +650,10 @@
     // ==================== FACTURAS ====================
     function generarFactura(v, precioVenta, nombre, cc, metodo) {
         let fecha = new Date();
-        let html = `<div id="facturaPDF" style="font-family:Arial;padding:20px;background:white;color:black;width:100%;"><div style="display:flex;justify-content:space-between;border-bottom:2px solid #000;padding-bottom:10px;"><div><img src="https://i.imgur.com/uzhDkFl.jpeg" style="height:80px;"></div><div style="text-align:right;"><strong>JM Autos S.A.S</strong><br>NIT:901.567.234-1<br>Valledupar<br>Tel:6055891234</div></div><div style="text-align:center;margin:20px 0;"><h1>FACTURA DE VENTA</h1><p><strong>N°:</strong> JM-${Date.now()}</p><p><strong>Fecha:</strong> ${fecha.toLocaleDateString('es-CO')}</p></div><div><h3>Cliente:</h3> ${nombre}<br>${cc}</div><div style="margin-top:20px;"><h3>Vehículo:</h3> ${v.titulo}<br>Año: ${v.año}</div><div><h3>Método de Pago:</h3> ${metodo}</div><table style="width:100%;border-collapse:collapse;margin-top:20px;"><tr style="background:#eee;"><th style="border:1px solid #000;padding:8px;">Descripción</th><th style="border:1px solid #000;padding:8px;">Valor</th></tr><tr><td style="border:1px solid #000;padding:8px;">Vehículo ${v.titulo}</td><td style="border:1px solid #000;padding:8px;text-align:right;">$${v.precio.toLocaleString()}</td></tr><tr><td style="border:1px solid #000;padding:8px;">Descuento</td><td style="border:1px solid #000;padding:8px;text-align:right;">$${(v.precio-precioVenta).toLocaleString()}</td> </tr>
-                <tr><td style="border:1px solid #000;padding:8px;"><strong>Total</strong></td><td style="border:1px solid #000;padding:8px;text-align:right;"><strong>$${precioVenta.toLocaleString()}</strong></td> </tr>
+        let html = `<div id="facturaPDF" style="font-family:Arial;padding:20px;background:white;color:black;width:100%;"><div style="display:flex;justify-content:space-between;border-bottom:2px solid #000;padding-bottom:10px;"><div><img src="https://i.imgur.com/uzhDkFl.jpeg" style="height:80px;"></div><div style="text-align:right;"><strong>JM Autos S.A.S</strong><br>NIT:901.567.234-1<br>Valledupar<br>Tel:6055891234</div></div><div style="text-align:center;margin:20px 0;"><h1>FACTURA DE VENTA</h1><p><strong>N°:</strong> JM-${Date.now()}</p><p><strong>Fecha:</strong> ${fecha.toLocaleDateString('es-CO')}</p></div><div><h3>Cliente:</h3> ${nombre}<br>${cc}</div><div style="margin-top:20px;"><h3>Vehículo:</h3> ${v.titulo}<br>Año: ${v.año}</div><div><h3>Método de Pago:</h3> ${metodo}</div><table style="width:100%;border-collapse:collapse;margin-top:20px;"><tr style="background:#eee;"><th style="border:1px solid #000;padding:8px;">Descripción</th><th style="border:1px solid #000;padding:8px;">Valor</th></tr>
+                <tr><td style="border:1px solid #000;padding:8px;">Vehículo ${v.titulo}</td><td style="border:1px solid #000;padding:8px;text-align:right;">$${v.precio.toLocaleString()}</td></tr>
+                <tr><td style="border:1px solid #000;padding:8px;">Descuento</td><td style="border:1px solid #000;padding:8px;text-align:right;">$${(v.precio-precioVenta).toLocaleString()}</td></tr>
+                <tr><td style="border:1px solid #000;padding:8px;"><strong>Total</strong></td><td style="border:1px solid #000;padding:8px;text-align:right;"><strong>$${precioVenta.toLocaleString()}</strong></td></tr>
             </table>
             <div style="margin-top:60px;display:flex;justify-content:space-between;"><div style="text-align:center;"><div style="border-top:1px solid #000;width:200px;"></div>Vendedor<br>JM Autos</div><div style="text-align:center;"><div style="border-top:1px solid #000;width:200px;"></div>Comprador<br>${nombre}</div></div></div>`;
         document.getElementById('contenidoFactura').innerHTML = html;
@@ -674,7 +677,6 @@
     function descargarExcelCompleto() {
         if(!adminLogueado) return;
         
-        // Datos de Autos
         let datosAutos = vehiculos.map(v => ({ 
             "ID": v.id, 
             "VEHÍCULO": v.titulo, 
@@ -685,7 +687,6 @@
             "AÑO": v.año 
         }));
         
-        // Datos de Productos
         let datosProductos = productos.map(p => ({ 
             "ID": p.id, 
             "PRODUCTO": p.nombre, 
@@ -696,15 +697,12 @@
             "VALOR INVENTARIO": p.precio * p.stock
         }));
         
-        // Crear hojas
         let ws1 = XLSX.utils.json_to_sheet(datosAutos);
         let ws2 = XLSX.utils.json_to_sheet(datosProductos);
         
-        // Ajustar anchos
         ws1['!cols'] = [{wch:8},{wch:40},{wch:15},{wch:15},{wch:15},{wch:12},{wch:10}];
         ws2['!cols'] = [{wch:8},{wch:45},{wch:15},{wch:15},{wch:15},{wch:10},{wch:18}];
         
-        // Resumen Financiero con diseño bonito
         let totalAutos = vehiculos.length;
         let autosVendidos = vehiculos.filter(v=>v.vendido).length;
         let gananciasAutos = vehiculos.filter(v=>v.vendido).reduce((s,v)=>s+(v.precioVentaReal||0),0);
@@ -764,7 +762,6 @@
         let valorCostoInventario = productos.reduce((s,p)=>s+(p.costo * p.stock),0);
         let gananciaPotencialProductos = valorInventario - valorCostoInventario;
         
-        // Ventas por mes
         let meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         let ventasMes = new Array(12).fill(0);
         vehiculos.filter(v => v.vendido && v.fechaVenta).forEach(v => { let mes = new Date(v.fechaVenta).getMonth(); ventasMes[mes]++; });
@@ -843,7 +840,6 @@
     function mostrarPreview() { let p = document.getElementById('imagePreview'); if(p) { p.innerHTML = ''; imagenesTemp.forEach((img,i) => { let d = document.createElement('div'); d.style.position = 'relative'; d.innerHTML = `<img src="${img}" class="preview-img"><button onclick="eliminarImagenTemp(${i})" style="position:absolute;top:-8px;right:-8px;background:red;color:white;border:none;border-radius:50%;width:20px;height:20px;">×</button>`; p.appendChild(d); }); } }
     function eliminarImagenTemp(i) { imagenesTemp.splice(i,1); mostrarPreview(); }
 
-    // Iniciar
     cargarDatosPublicos();
     renderizarCatalogo();
 </script>
